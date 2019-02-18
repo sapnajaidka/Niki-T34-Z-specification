@@ -1,0 +1,478 @@
+\documentclass[landscape]{article}
+
+\usepackage{z-eves}
+\usepackage{geometry}
+
+
+\begin{document}
+
+\section{Z of the functionality of the manual}
+
+\begin{zed}
+YesNo ::= yes | no\\
+SyringeBrand ::= BDPlastipak\\
+CHAR ::= CheckPlungerSensor | PumpPausedForTooLong\_Beep |PumpPausedForTooLong\_NoBeep | Volume | Enter\_Code | Incorrect\_Code | Code\_Accepted | StartInfusion? | ConfirmSettings\_PressYes | PumpDelivering\_10mlBDPlastipak | PumpStopped\_PressYesToResume | Resume? | ConfirmToResume | InfusionSummary | SetUpCode\_Accepted\\
+\end{zed}
+
+\begin{axdef}
+PerCent : \power \num\\
+millilitres : \power \nat\\
+millimeters : \power \nat\\
+hours : \power \nat\\
+minutes : \power \nat\\
+millilitresperhour: \power \nat
+\where
+millilitres = 0 \upto 100\\
+PerCent = 0 \upto 100\\
+millimeters = 0 \upto 10\\
+hours = 0 \upto 24\\
+minutes = 0 \upto 59\\
+millilitresperhour = 0 \upto 100\\
+\end{axdef}
+
+
+
+\begin{schema}{T34}
+BatteryCharge : PerCent\\
+KeyPadLocked : YesNo\\
+ProgramLocked : YesNo\\
+TechMenuLocked : YesNo\\
+Brand : SyringeBrand\\
+SyringeSize : millilitres\\
+VolumeLeft : millilitres\\
+PlungerPosition : millimeters \\
+SyringeOK : YesNo\\
+BarrelOK, CollarOK, PlungerOK : YesNo\\
+SystemReady : YesNo\\
+VTBI : millilitres\\
+Hours : hours\\
+Minutes : minutes\\
+InfusionRate : millilitresperhour\\
+\end{schema}
+
+\begin{schema}{Init}
+T34
+\where
+BatteryCharge = 90\\
+KeyPadLocked = no\\
+ProgramLocked = yes \\
+TechMenuLocked = yes\\
+Brand = BDPlastipak\\ 
+SyringeSize = 10\\
+VolumeLeft = 0\\
+PlungerPosition = 10 \\
+SyringeOK = yes\\
+BarrelOK= CollarOK= PlungerOK = yes\\
+SystemReady = no\\
+VTBI =0\\
+Hours =0\\
+Minutes =0\\
+InfusionRate =0
+\end{schema}
+
+\begin{schema}{SyringeWarnings}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = CheckPlungerSensor\\
+\end{schema}
+
+\begin{schema} {MoveActuatorFwd}
+\Xi T34
+\end{schema}
+
+\begin{schema} {ArmWarning}
+\Xi T34
+\end{schema}
+
+\begin{schema} {MoveActuatorBwd}
+\Xi T34
+\end{schema}
+
+\begin{schema}{SyringeDisplay}
+\Xi T34\\
+display! : millilitres \cross SyringeBrand\\
+\where
+display! = (SyringeSize, Brand)\\
+\end{schema}
+
+\begin{schema} {ScrollSyringeList}
+\Xi T34
+\end{schema}
+
+\begin{schema} {SelectSyringe}
+\Xi T34
+\end{schema}
+
+
+
+
+
+\begin{schema} {InfoList}
+\Xi T34
+\end{schema}
+
+\begin{schema} {ScrollInfoListUp}
+\Xi T34
+\end{schema}
+
+\begin{schema} {ScrollInfoListDown}
+\Xi T34
+\end{schema}
+
+\begin{schema} {keypadLock}
+\Xi T34
+\end{schema}
+
+\begin{schema} {BatteryLevel}
+\Xi T34\\
+display! : PerCent\\
+\where
+display! = BatteryCharge\\
+\end{schema}
+
+\begin{schema} {TimeOut}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = PumpPausedForTooLong\_Beep\\
+\end{schema}
+
+\begin{schema} {StopAlarm}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = PumpPausedForTooLong\_NoBeep\\
+\end{schema}
+
+\begin{schema} {CurrentVolume}
+\Xi T34\\
+display! :  CHAR \cross millilitres\\
+\where
+display! = (Volume , VTBI)
+\end{schema}
+
+\begin{schema}{CurrentSyringe}
+\Xi T34\\
+display! : millilitres \cross SyringeBrand\\
+\where
+display! = (SyringeSize, Brand)\\
+\end{schema}
+
+
+\begin{schema} {IncreaseVTBI}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady' = SystemReady\\
+VTBI' = VTBI + 1 \\ 
+Hours' = Hours\\
+Minutes' = Minutes\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+\begin{schema} {DecreaseVTBI}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady' = SystemReady\\
+VTBI > 1\\
+VTBI' = VTBI - 1\\
+Hours' = Hours\\
+Minutes' = Minutes\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+
+
+\begin{schema} {SetVTBI}
+\Xi T34
+\end{schema}
+
+\begin{schema} {SelectDigit}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = Enter\_Code\\
+\end{schema}
+
+\begin{schema} {IncorrectCode}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = Incorrect\_Code\\
+\end{schema}
+
+\begin{schema} {RateCodeAccept}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = Code\_Accepted\\
+\end{schema}
+
+\begin{schema} {IncreaseDuration}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady' = SystemReady\\
+VTBI' = VTBI \\ 
+Minutes \leq 58 \implies (Minutes' = Minutes + 1 \land Hours' = Hours)\\
+Minutes = 59 \implies (Minutes' =0 \land ((Hours \leq 23 \implies Hours'= Hours + 1) \land (Hours = 24 \implies Hours' = 0)))\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+\begin{schema} {DecreaseDuration}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady' = SystemReady\\
+VTBI' = VTBI\\ 
+(Minutes =0 \land Hours=0) \implies (Minutes' = 0 \land Hours' = 0)\\
+Minutes \geq 1 \implies (Minutes' = Minutes - 1 \land Hours' = Hours)\\
+Minutes = 0 \implies (Minutes'=59 \land ((Hours \leq 1 \implies Hours' = Hours -1) \land (Hours = 0 \implies Hours' =0)))\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+\begin{schema} {SetNewDuration}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady' = SystemReady\\
+VTBI' = VTBI\\ 
+Hours > 0 \lor Minutes >0\\
+InfusionRate' = ((60 * VTBI) \div ((60 * Hours) + Minutes))\\
+\end{schema}
+
+\begin{schema} {CurrentRate}
+\Xi T34\\
+display! : millilitresperhour\\
+\where
+display! = InfusionRate\\
+\end{schema}
+
+\begin{schema} {SaveSettings}
+\Xi T34
+\end{schema}
+
+\begin{schema} {ConfirmMsg}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = ConfirmSettings\_PressYes\\
+\end{schema}
+
+\begin{schema} {CurrentVTBI}
+\Xi T34\\
+display! : millilitres\\
+\where
+display! = VTBI\\
+\end{schema}
+
+\begin{schema} {CurrentDuration}
+\Xi T34\\
+display! : hours \cross minutes\\
+\where
+display! = (Hours, Minutes)\\
+\end{schema}
+
+
+\begin{schema} {StartInfusingMsg}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = StartInfusion?\\
+\end{schema}
+
+\begin{schema} {Infusing}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady = no\\
+SystemReady' = yes\\
+VTBI' = VTBI\\
+Hours' = Hours\\
+Minutes' = Minutes\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+\begin{schema} {TimeRemaining}
+\Xi T34\\
+display! : hours \cross minutes\\
+\where
+display! = (Hours, Minutes)\\
+\end{schema}
+
+\begin{schema} {DeliveringMsg}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! =  PumpDelivering\_10mlBDPlastipak\\
+\end{schema}
+
+\begin{schema} {Pause}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady = yes\\
+SystemReady' = no\\
+VTBI' = VTBI\\
+Hours' = Hours\\
+Minutes' = Minutes\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+\begin{schema} {PumpStoppedWarning}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! =  PumpStopped\_PressYesToResume\\
+\end{schema}
+
+\begin{schema} {ResumeInfusing}
+\Delta T34\\
+\where
+BatteryCharge' =  BatteryCharge \\
+KeyPadLocked' = KeyPadLocked\\
+ProgramLocked' = ProgramLocked \\
+TechMenuLocked' = TechMenuLocked\\
+Brand' = Brand\\ 
+SyringeSize' = SyringeSize\\
+VolumeLeft' = VolumeLeft\\
+PlungerPosition' = PlungerPosition \\
+SyringeOK' = SyringeOK\\
+BarrelOK'= BarrelOK\\
+CollarOK'= CollarOK\\
+PlungerOK' = PlungerOK \\
+SystemReady = no\\
+SystemReady' = yes\\
+VTBI' = VTBI\\
+Hours' = Hours\\
+Minutes' = Minutes\\
+InfusionRate' = InfusionRate\\
+\end{schema}
+
+\begin{schema} {SyringeDisplay2}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = Resume?\\
+\end{schema}
+
+\begin{schema} {ResumeConfirm}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = ConfirmToResume\\
+\end{schema}
+
+\begin{schema} {SyringeStatusDisplay}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = InfusionSummary\\
+\end{schema}
+
+
+\begin{schema} {EventLogData}
+\Xi T34\\
+\end{schema}
+
+\begin{schema} {EventInfoDisplay}
+\Xi T34\\
+\end{schema}
+
+\begin{schema} {NextEvent}
+\Xi T34\\
+\end{schema}
+
+\begin{schema} {PrevEvent}
+\Xi T34\\
+\end{schema}
+
+
+\begin{schema} {SetUpCodeAccept}
+\Xi T34\\
+display! : CHAR\\
+\where
+display! = SetUpCode\_Accepted\\
+\end{schema}
+\end{document}
+
+
